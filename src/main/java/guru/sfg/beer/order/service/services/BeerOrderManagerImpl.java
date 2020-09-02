@@ -7,6 +7,7 @@ import guru.sfg.beer.order.service.repositories.BeerOrderRepository;
 import guru.sfg.beer.order.service.sm.BeerOrderStateChangeInterceptor;
 import guru.sfg.brewery.model.BeerOrderDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
@@ -15,11 +16,13 @@ import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
  * @author Nuno Martins
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BeerOrderManagerImpl implements BeerOrderManager {
@@ -61,17 +64,17 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
     public void beerOrderAllocationPassed(BeerOrderDto beerOrderDto) {
         BeerOrder beerOrder = beerOrderRepository.getOne(beerOrderDto.getId());
         sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.ALLOCATION_SUCCESS);
-        updateAllocatedQty(beerOrderDto, beerOrder);
+        updateAllocatedQty(beerOrderDto);
     }
 
     @Override
     public void beerOrderAllocationPendingInventory(BeerOrderDto beerOrderDto) {
         BeerOrder beerOrder = beerOrderRepository.getOne(beerOrderDto.getId());
         sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.ALLOCATION_NO_INVENTORY);
-        updateAllocatedQty(beerOrderDto, beerOrder);
+        updateAllocatedQty(beerOrderDto);
     }
 
-    private void updateAllocatedQty(BeerOrderDto beerOrderDto, BeerOrder beerOrder) {
+    private void updateAllocatedQty(BeerOrderDto beerOrderDto) {
         BeerOrder allocatedOrder = beerOrderRepository.getOne(beerOrderDto.getId());
 
         allocatedOrder.getBeerOrderLines().forEach(beerOrderLine -> {
@@ -82,7 +85,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
             });
         });
 
-        beerOrderRepository.saveAndFlush(beerOrder);
+        beerOrderRepository.saveAndFlush(allocatedOrder);
     }
 
     @Override
@@ -99,6 +102,16 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
                 .build();
 
         stateMachine.sendEvent(message);
+    }
+
+    @Override
+    public void beerOrderPickedUp(UUID id) {
+        Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(id);
+
+        beerOrderOptional.ifPresentOrElse(beerOrder -> {
+            //do process
+            sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.BEERORDER_PICKED_UP);
+        }, () -> log.error("Order Not Found. Id: " + id));
     }
 
     private StateMachine<BeerOrderStatusEnum, BeerOrderEventEnum> buildStateMachine(BeerOrder beerOrder) {
