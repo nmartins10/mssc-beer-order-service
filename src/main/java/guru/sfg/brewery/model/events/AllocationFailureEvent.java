@@ -8,13 +8,12 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 /**
- * Created by jt on 12/2/19.
+ * Created by jt on 2/26/20.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ValidateOrderResult {
+public class AllocationFailureEvent {
     private UUID orderId;
-    private Boolean isValid;
 }

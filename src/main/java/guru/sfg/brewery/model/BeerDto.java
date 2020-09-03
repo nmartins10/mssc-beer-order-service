@@ -11,14 +11,13 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 /**
- * @author Nuno Martins
+ * Created by jt on 2019-06-09.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class BeerDto {
-
     private UUID id = null;
     private Integer version = null;
 

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import java.util.Optional;
 
 /**
- * @author Nuno Martins
+ * Created by jt on 2019-06-09.
  */
 public abstract class BeerOrderLineMapperDecorator implements BeerOrderLineMapper {
 

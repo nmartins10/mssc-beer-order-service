@@ -10,14 +10,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * @author Nuno Martins
+ * Created by jt on 2019-06-09.
  */
 @ConfigurationProperties(prefix = "sfg.brewery", ignoreUnknownFields = false)
 @Service
 public class BeerServiceImpl implements BeerService {
     public final static String BEER_PATH_V1 = "/api/v1/beer/";
     public final static String BEER_UPC_PATH_V1 = "/api/v1/beerUpc/";
-
     private final RestTemplate restTemplate;
 
     private String beerServiceHost;
@@ -27,8 +26,8 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public Optional<BeerDto> getBeerById(UUID beerId) {
-        return Optional.of(restTemplate.getForObject(beerServiceHost + BEER_PATH_V1 + beerId.toString(), BeerDto.class));
+    public Optional<BeerDto> getBeerById(UUID uuid){
+        return Optional.of(restTemplate.getForObject(beerServiceHost + BEER_PATH_V1 + uuid.toString(), BeerDto.class));
     }
 
     @Override

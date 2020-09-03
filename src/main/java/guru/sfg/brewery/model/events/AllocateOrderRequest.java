@@ -7,13 +7,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @author Nuno Martins
+ * Created by jt on 12/2/19.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class AllocateOrderRequest {
-
     private BeerOrderDto beerOrderDto;
 }
